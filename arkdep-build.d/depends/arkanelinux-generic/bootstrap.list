@@ -1,5 +1,5 @@
 base
-linux
+linux-zen
 linux-firmware
 arkane-keyring
 dracut
