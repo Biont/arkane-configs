@@ -1,0 +1,24 @@
+name: arkdep_build
+on:
+  workflow_dispatch:
+  #push:
+  #  branches:
+  #    - '**'
+  #schedule:
+  #   - cron:  '30 6 1 * *'
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        ##### EDIT ME #####      
+        EDITION: [test-manjaro-gnome, test-manjaro-kde, test-manjaro-xfce]
+        ###################          
+    steps:
+      - uses: actions/checkout@v4
+      - id: arkdep-build
+        uses: ./.github/actions/arkdep-action
+        with:
+          edition: ${{ matrix.edition }}
+          arkdep-profiles-repo: "https://github.com/Biont/arkane-configs.git"
