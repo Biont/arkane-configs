@@ -13,7 +13,7 @@ jobs:
     strategy:
       matrix:
         ##### EDIT ME #####      
-        EDITION: [test-manjaro-gnome, test-manjaro-kde, test-manjaro-xfce]
+        EDITION: [biont]
         ###################          
     steps:
       - uses: actions/checkout@v4
