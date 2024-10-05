@@ -7,6 +7,9 @@ SHELL=/bin/zsh
 # The default group for users
 GROUP=users
 
+EXTRA_GROUPS=docker
+ADD_EXTRA_GROUPS=1
+
 # The default home directory.
 HOME=/home
 

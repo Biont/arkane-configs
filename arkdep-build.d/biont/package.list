@@ -59,6 +59,11 @@ xdg-utils
 
 # Custom
 nano
+fzf
+podman-docker
+slirp4netns
+dnsmasq
+
 
 # Arkane Linux
 arkane-application-cleaner

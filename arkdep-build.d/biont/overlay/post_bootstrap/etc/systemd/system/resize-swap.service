@@ -1,0 +1,12 @@
+[Unit]
+Description=Resize Swap File After Boot
+After=multi-user.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/abin/resize-swap
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
+

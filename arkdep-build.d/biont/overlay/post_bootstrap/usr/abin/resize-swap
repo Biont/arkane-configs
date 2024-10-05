@@ -1,0 +1,41 @@
+#!/bin/bash
+
+# Step 1: Get the total RAM size in megabytes (rounded up)
+TOTAL_RAM_MB=$(LC_ALL=C free --mebi | awk '/Mem:/ {print $2}')
+SWAP_SIZE_MB=$(( TOTAL_RAM_MB + TOTAL_RAM_MB / 2 ))
+
+# Step 2: Get current swap usage info
+current_swapfile="/arkdep/shared/swapfile"
+current_size=$(du -m "$current_swapfile" | awk '{print $1}')
+
+# Step 3: Check if swap size already sufficient
+if [ "$current_size" -ge "$SWAP_SIZE_MB" ]; then
+    echo "Swapfile size ($current_size MB) is already >= 1.5x RAM ($SWAP_SIZE_MB MB). No resizing needed."
+    exit 0
+fi
+
+# Step 4: Disable the current swapfile
+swapoff "$current_swapfile"
+
+# Step 5: Resize the existing swapfile in place
+fallocate -l ${SWAP_SIZE_MB}M "$current_swapfile"
+
+# If fallocate is not available, use truncate as a fallback
+if [ $? -ne 0 ]; then
+    truncate -s ${SWAP_SIZE_MB}M "$current_swapfile"
+fi
+
+# Step 6: Set the correct permissions for the swapfile
+chmod 600 "$current_swapfile"
+
+# Step 7: Recreate the swap space header on the resized file
+mkswap "$current_swapfile"
+
+# Step 8: Enable the swapfile again
+swapon "$current_swapfile"
+
+# Step 9: Verify the swap is active and resized
+swapon --show
+
+echo "Swapfile has been resized to $SWAP_SIZE_MB MB and re-enabled without changing the offset."
+
