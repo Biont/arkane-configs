@@ -1,0 +1,5 @@
+TARGET_PORT=3001
+WORKING_DIRECTORY=/opt/llm/docker/ollama
+EXEC_START=/usr/bin/docker-compose up -d --remove-orphans
+EXEC_STOP=/usr/bin/docker-compose down
+TIMEOUT=8h

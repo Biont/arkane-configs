@@ -1,0 +1,30 @@
+#!/bin/bash
+
+# Define the directory containing the shell scripts
+SCRIPT_DIR="/var/opt/arkane-postinstall"
+
+# Iterate over all .sh files in the specified directory
+for SCRIPT_FILE in "$SCRIPT_DIR"/*.sh; do
+    # Check if the file exists
+    if [[ -f "$SCRIPT_FILE" ]]; then
+        echo "Executing script: $SCRIPT_FILE"
+        
+        # Execute the script and capture its exit code
+        EXIT_CODE=0
+        bash "$SCRIPT_FILE"
+        EXIT_CODE=$?
+
+        # If the script returned a non-zero exit code, abort
+        if [[ $EXIT_CODE -ne 0 ]]; then
+            echo "Script failed with exit code: $EXIT_CODE. Aborting."
+            exit $EXIT_CODE
+        fi
+
+        # If the script succeeded (exit code is zero), delete it
+        rm "$SCRIPT_FILE"
+    else
+        echo "No scripts found in directory: $SCRIPT_DIR"
+    fi
+done
+
+echo "All scripts processed successfully."

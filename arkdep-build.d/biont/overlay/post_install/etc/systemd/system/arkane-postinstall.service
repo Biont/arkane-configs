@@ -1,0 +1,12 @@
+[Unit]
+Description=Run arkane-postinstall once machine is online
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/arkane-postinstall
+RemainAfterExit=true
+
+[Install]
+WantedBy=multi-user.target

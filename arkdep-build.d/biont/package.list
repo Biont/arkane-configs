@@ -60,10 +60,10 @@ xdg-utils
 # Custom
 nano
 fzf
-podman-docker
-slirp4netns
+docker
 dnsmasq
 wl-clipboard
+fprintd
 
 
 # Arkane Linux

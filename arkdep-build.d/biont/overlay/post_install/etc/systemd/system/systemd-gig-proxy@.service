@@ -1,0 +1,15 @@
+[Unit]
+Description=Runs a socket-activated service and stops it after a while
+After=network-online.target
+PartOf=systemd-gig@%i.service
+StopWhenUnneeded=true
+BindsTo=systemd-gig@%i.service
+Before=systemd-gig@%i.service
+
+[Service]
+Type=simple
+RemainAfterExit=true
+EnvironmentFile=%E/systemd-gig/%i.conf
+ExecStart=/docker/systemd-gig start %i
+ExecStartPost=/docker/systemd-gig wait-online ${TARGET_PORT}
+ExecStop=/docker/systemd-gig stop %i

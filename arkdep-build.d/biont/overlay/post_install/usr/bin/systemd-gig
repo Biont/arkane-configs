@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+
+
+function exec() {
+ echo "$PWD"
+ readarray -td ' ' CMD <<<${1}
+ "${CMD[@]%$'\n'}"
+}
+
+function wait-online() {
+ tries=600
+
+ for i in `seq $tries`; do
+  if nc -z 127.0.0.1 $1 > /dev/null ; then
+    # Ready
+   echo "Port ${1} online"
+    exit 0
+  fi
+  /bin/sleep 0.1
+ done
+}
+
+function start() {
+ pushd "${WORKING_DIRECTORY}"
+ exec "${EXEC_START}" &
+}
+
+function stop() {
+ pushd "${WORKING_DIRECTORY}"
+ exec "${EXEC_STOP}"
+}
+
+function init() {
+ systemctl start "systemd-gig@.service${1}.service"
+}
+
+case "$1" in
+start | stop | wait-online)
+  "$@"
+  exit
+  ;;
+esac
+

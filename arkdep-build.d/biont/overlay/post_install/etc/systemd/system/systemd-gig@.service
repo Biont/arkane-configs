@@ -1,0 +1,8 @@
+[Unit]
+Requires=systemd-gig-proxy@%i.service
+After=systemd-gig-proxy@%i.service
+PartOf=server-online.target
+
+[Service]
+EnvironmentFile=%E/systemd-containers/gig/%i.conf
+ExecStart=/lib/systemd/systemd-socket-proxyd 127.0.0.1:${TARGET_PORT} --exit-idle-time="${TIMEOUT}"
