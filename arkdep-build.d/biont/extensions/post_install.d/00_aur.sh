@@ -1,5 +1,7 @@
 AUR_PACKAGES=(
 waydroid
+waydroid-script-git
+python-pyclip
 ddev-bin
 )
 

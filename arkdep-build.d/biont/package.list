@@ -63,6 +63,7 @@ fzf
 podman-docker
 slirp4netns
 dnsmasq
+wl-clipboard
 
 
 # Arkane Linux
