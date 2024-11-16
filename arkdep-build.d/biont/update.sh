@@ -4,6 +4,10 @@ if [[ -f $arkdep_boot/loader/entries/${data[0]}.conf ]]; then
 	bootctl set-default ''
 fi
 
+if [[ -e /var/lib/fprint ]]; then
+	cp -rT /var/lib/fprint $arkdep_dir/deployments/${data[0]}/var/lib/fprint
+fi
+
 # Ensure script is run as root
 if [[ $EUID -ne 0 ]]; then
     printf "This script must be run as root.\n" >&2
