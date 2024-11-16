@@ -5,14 +5,26 @@ services:
     container_name: ollama
     tty: true
     restart: unless-stopped
-    image: ollama/ollama:latest
+    image: ollama/ollama:rocm
     ports:
       - 11433:11434
     environment:
       - OLLAMA_KEEP_ALIVE=24h
+#      - OLLAMA_NUM_PARALLEL=5
+      - HSA_OVERRIDE_GFX_VERSION=11.0.0
+#      - HSA_ENABLE_SDMA=0
     devices:
       - /dev/dri
       - /dev/kfd
+    group_add:
+      - video
+    ipc: host
+    privileged: true
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - seccomp=unconfined
+
 #  shellgpt:
 #    build: ./shell_gpt/build
 #  #open-webui:

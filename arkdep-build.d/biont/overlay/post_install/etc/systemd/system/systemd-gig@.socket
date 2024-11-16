@@ -1,7 +1,7 @@
 [Unit]
-PartOf=server-online.target
+PartOf=multi-user.target
 [Socket]
 ListenStream=%i
 [Install]
 WantedBy=sockets.target
-WantedBy=server-online.target
+WantedBy=multi-user.target

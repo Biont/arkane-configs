@@ -1,4 +1,5 @@
 AUR_PACKAGES=(
+opencl-amd
 waydroid
 waydroid-script-git
 python-pyclip

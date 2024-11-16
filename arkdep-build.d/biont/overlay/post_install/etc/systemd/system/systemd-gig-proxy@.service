@@ -9,7 +9,7 @@ Before=systemd-gig@%i.service
 [Service]
 Type=simple
 RemainAfterExit=true
-EnvironmentFile=%E/systemd-gig/%i.conf
-ExecStart=/docker/systemd-gig start %i
-ExecStartPost=/docker/systemd-gig wait-online ${TARGET_PORT}
-ExecStop=/docker/systemd-gig stop %i
+EnvironmentFile=%E/systemd-containers/gig/%i.conf
+ExecStart=/usr/bin/systemd-gig start %i
+ExecStartPost=/usr/bin/systemd-gig wait-online ${TARGET_PORT}
+ExecStop=/usr/bin/systemd-gig stop %i
