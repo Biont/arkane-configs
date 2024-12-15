@@ -13,4 +13,4 @@ Include = /etc/pacman.d/chaotic-mirrorlist
 "
 arch-chroot $workdir echo "$CONTENT" >> /etc/pacman.conf
 
-arch-chroot $workdir pacman -Syu --noconfirm
+arch-chroot $workdir pacman -Sy

@@ -5,7 +5,7 @@ if [[ -f $arkdep_boot/loader/entries/${data[0]}.conf ]]; then
 fi
 
 if [[ -e /var/lib/fprint ]]; then
-	cp -rT /var/lib/fprint $arkdep_dir/deployments/${data[0]}/var/lib/fprint
+	cp -rT /var/lib/fprint $arkdep_dir/deployments/${data[0]}/rootfs/var/lib/fprint
 fi
 
 # Ensure script is run as root
