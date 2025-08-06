@@ -12,6 +12,7 @@ mkdir -p $aur_root_abs
 chown -R nobody:nobody $aur_root_abs
 
 arch-chroot $workdir bash -c "echo 'nobody ALL = (ALL:ALL) NOPASSWD: ALL' >> /etc/sudoers.d/nobody"
+arch-chroot $workdir bash -c "usermod --expiredate= nobody"
 arch-chroot $workdir bash -c "pacman -S --needed --noconfirm git base-devel"
 arch-chroot $workdir sudo -u nobody bash -c "cd $aur_root && git clone https://aur.archlinux.org/yay-bin.git && cd yay-bin && makepkg -si --noconfirm"
 arch-chroot $workdir sudo -u nobody bash -c "yay -S --noconfirm ${AUR_PACKAGES[*]}"
