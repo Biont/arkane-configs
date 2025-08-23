@@ -29,7 +29,7 @@ services:
 #    build: ./shell_gpt/build
   open-webui:
       ports:
-          - 7860:8080
+          - 7861:8080
       environment:
           - OPENAI_API_KEY=foo
           - OLLAMA_API_BASE_URL=http://ollama:11434
