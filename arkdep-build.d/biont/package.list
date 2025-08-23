@@ -71,6 +71,10 @@ yq
 mkcert
 alsa-utils
 
+# AI
+rocm-opencl-runtime
+hipblas
+
 #Gaming
 #steam
 #gamescope
