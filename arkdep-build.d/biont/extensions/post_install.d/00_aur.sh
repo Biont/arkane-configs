@@ -3,6 +3,8 @@ waydroid
 waydroid-script-git
 python-pyclip
 ddev-bin
+aider-chat-venv
+jetbrains-toolbox
 )
 
 declare -r aur_root="/usr/share/aur"

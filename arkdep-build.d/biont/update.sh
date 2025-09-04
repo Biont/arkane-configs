@@ -59,7 +59,8 @@ fi
 # Configure dracut with the resume information
 printf "Configuring dracut with resume information...\n"
 mkdir -p "$dracut_conf_dir"
-printf "add_dracutcmdline=\"resume=UUID=%s resume_offset=%s\"\n" "$uuid" "$offset" > "$resume_conf"
+printf "add_dracutmodules+=\" resume \"\n" > "$resume_conf"
+printf "add_dracutcmdline=\"resume=UUID=%s resume_offset=%s\"\n" "$uuid" "$offset" >> "$resume_conf"
 
 # Rebuild dracut
 printf "Rebuilding dracut configuration...\n"
