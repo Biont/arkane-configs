@@ -5,6 +5,7 @@ python-pyclip
 ddev-bin
 aider-chat-venv
 jetbrains-toolbox
+plymouth-theme-bgrt-better-luks
 )
 
 declare -r aur_root="/usr/share/aur"
