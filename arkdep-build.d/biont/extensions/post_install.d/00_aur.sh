@@ -5,6 +5,7 @@ python-pyclip
 ddev-bin
 aider-chat-venv
 jetbrains-toolbox
+jetbrains-nautilus-git
 plymouth-theme-bgrt-better-luks
 )
 
