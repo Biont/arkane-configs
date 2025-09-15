@@ -24,7 +24,7 @@ cups-pdf
 flatpak
 fuse
 fwupd
-gnu-netcat
+openbsd-netcat
 gst-plugin-pipewire
 gst-plugins-base
 gst-plugins-good
@@ -71,6 +71,7 @@ jq
 yq
 mkcert
 alsa-utils
+alsa-firmware
 
 # AI
 rocm-opencl-runtime
