@@ -72,6 +72,8 @@ yq
 mkcert
 alsa-utils
 alsa-firmware
+wireguard-tools
+openresolv
 
 # AI
 rocm-opencl-runtime
