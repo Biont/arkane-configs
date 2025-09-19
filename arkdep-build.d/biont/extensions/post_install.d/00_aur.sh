@@ -7,6 +7,7 @@ aider-chat-venv
 jetbrains-toolbox
 jetbrains-nautilus-git
 plymouth-theme-bgrt-better-luks
+1password
 )
 
 declare -r aur_root="/usr/share/aur"
