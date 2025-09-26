@@ -1,0 +1,10 @@
+name: mcpo
+services:
+  mcpo:
+    ports:
+      - 7862:8000
+    image: ghcr.io/open-webui/mcpo:main
+    command: --api-key "webui"  --config /config.json --hot-reload
+    volumes:
+    - ./config.json:/config.json
+    network_mode: "host"
