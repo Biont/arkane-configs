@@ -74,3 +74,31 @@ dracut -q -k $arkdep_dir/deployments/${data[0]}/rootfs/usr/lib/modules/${kernels
 
 printf "Swapfile created and configured successfully.\n"
 
+echo "Setting up users and groups."
+
+REQUIRED_GROUPS=(
+wheel
+docker
+)
+
+
+# Iterate over every login user with a home
+while IFS=: read -r user _ uid _ _ homedir shell; do
+  # Filter: normal UID, real home, real login shell
+  if [[ $uid -ge $UID_MIN && $uid -le $UID_MAX \
+      && -d "$homedir" && -x "$homedir" \
+      && ! "$shell" =~ ^/(usr/sbin/nologin|bin/false)$ ]]; then
+
+    echo ">>> Processing $user (UID=$uid, home=$homedir)"
+
+    # 4️⃣  Ensure the user is in each required group.
+    for grp in "${REQUIRED_GROUPS[@]}"; do
+      echo ">>> Adding $user to group $grp"
+      chroot /arkdep/deployments/${data[0]}/rootfs usermod -aG "$grp" "$user"
+    done
+
+  fi
+done < <(getent passwd)
+
+echo "Done setting up users/groups."
+
