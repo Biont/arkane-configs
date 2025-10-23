@@ -11,6 +11,7 @@ gnome-shell
 gnome-software
 gnome-system-monitor
 gnome-tour
+gnome-keyring
 mutter
 nautilus
 
