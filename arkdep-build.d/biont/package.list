@@ -76,6 +76,10 @@ alsa-firmware
 wireguard-tools
 openresolv
 
+# Printing & Scanning
+hplip
+system-config-printer
+
 # AI
 rocm-opencl-runtime
 hipblas
