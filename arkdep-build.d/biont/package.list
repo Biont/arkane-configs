@@ -23,16 +23,13 @@ bluez-utils
 cups
 cups-pdf
 flatpak
-fuse
+fuse3
 fwupd
-openbsd-netcat
 gst-plugin-pipewire
 gst-plugins-base
 gst-plugins-good
-gst-plugin-pipewire
 gvfs
 gvfs-afc
-gvfs-dnssd
 gvfs-dnssd
 gvfs-goa
 gvfs-gphoto2
@@ -75,10 +72,10 @@ alsa-utils
 alsa-firmware
 wireguard-tools
 openresolv
+openbsd-netcat
 
 # Printing & Scanning
 hplip
-system-config-printer
 
 # AI
 rocm-opencl-runtime
@@ -94,4 +91,12 @@ hipblas
 arkane-application-cleaner
 arkane-flatpak-init
 arkane-wallpapers
-libnss-extrausers
+
+# Community requested
+v4l-utils
+v4l2loopback-dkms
+v4l2loopback-utils
+
+# Fancy stuff
+sudo-rs
+realtime-privileges
