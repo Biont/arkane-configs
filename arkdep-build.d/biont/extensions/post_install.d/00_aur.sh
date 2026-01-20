@@ -1,4 +1,7 @@
 AUR_PACKAGES=(
+claude-desktop-bin
+claude-code
+claude-code-router
 waydroid
 waydroid-script-git
 python-pyclip
@@ -44,26 +47,6 @@ arch-chroot $workdir sudo -u aurbuilder bash -c "which yay"
 
 # Install AUR packages
 arch-chroot $workdir sudo -u aurbuilder bash -c "yay -S --noconfirm ${AUR_PACKAGES[*]}"
-
-# Install claude-desktop-native with proper setup
-arch-chroot $workdir sudo -u aurbuilder bash -c "
-# Ensure we're in the right directory with permissions
-cd $aur_root
-pwd
-ls -la
-
-# Clone the repository
-git clone https://github.com/jkoelker/claude-desktop-native.git
-cd claude-desktop-native
-
-# Set npm environment to avoid permission issues
-export NPM_CONFIG_CACHE=/home/aurbuilder/.npm-cache
-export NPM_CONFIG_PREFIX=/home/aurbuilder/.npm-global
-mkdir -p \$NPM_CONFIG_CACHE \$NPM_CONFIG_PREFIX
-
-# Build with yay
-yay -Bi . --noconfirm
-"
 
 # Cleanup
 arch-chroot $workdir sudo -u aurbuilder bash -c "yay -Yc --noconfirm"
