@@ -25,4 +25,4 @@ echo "Deploying image..."
 sudo arkdep deploy cache "$IMAGE"
 
 echo "Clearing build directory..."
-rm -r target/*
+rm -rf target/*
