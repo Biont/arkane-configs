@@ -9,5 +9,19 @@ arch-chroot $workdir plymouth-set-default-theme bgrt-better-luks
 # I have yet to figure out if it does anything
 arch-chroot $workdir systemctl mask plymouth-quit.service
 
-# Run mkcert -install (needed for DDEV SSL)
-arch-chroot $workdir mkcert -install
+# Set up mkcert system-wide CA for DDEV SSL
+# Create system-wide CAROOT directory
+mkdir -p $workdir/usr/local/share/mkcert
+chmod 755 $workdir/usr/local/share/mkcert
+
+# Generate CA and install to system trust store
+arch-chroot $workdir bash -c "
+export CAROOT=/usr/local/share/mkcert
+mkcert -install
+"
+
+# Ensure CA files are readable
+chmod 644 $workdir/usr/local/share/mkcert/*
+
+# Make mkcert user setup script executable
+chmod +x $workdir/usr/local/bin/setup-mkcert-user

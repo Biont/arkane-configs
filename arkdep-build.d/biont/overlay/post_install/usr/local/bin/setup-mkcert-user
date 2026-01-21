@@ -1,0 +1,33 @@
+#!/bin/bash
+# One-time setup script to install mkcert CA for the current user
+# This is needed for DDEV HTTPS to work in browsers (Firefox, Chrome)
+
+SETUP_MARKER="$HOME/.config/mkcert-setup-done"
+
+# Exit if already set up
+if [ -f "$SETUP_MARKER" ]; then
+    exit 0
+fi
+
+# Check if mkcert is available
+if ! command -v mkcert &> /dev/null; then
+    echo "Warning: mkcert not found, skipping browser CA setup" >&2
+    exit 0
+fi
+
+# Check if system CA exists
+if [ ! -d "/usr/local/share/mkcert" ] || [ ! -f "/usr/local/share/mkcert/rootCA.pem" ]; then
+    echo "Warning: System mkcert CA not found, skipping browser CA setup" >&2
+    exit 0
+fi
+
+# Set CAROOT to system location and install CA for user's browsers
+export CAROOT=/usr/local/share/mkcert
+if mkcert -install 2>/dev/null; then
+    # Create marker file
+    mkdir -p "$HOME/.config"
+    touch "$SETUP_MARKER"
+    echo "mkcert CA installed successfully for your browsers" >&2
+else
+    echo "Warning: Failed to install mkcert CA for browsers" >&2
+fi
