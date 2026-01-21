@@ -8,23 +8,6 @@ if [[ -e /var/lib/fprint ]]; then
 	cp -rT /var/lib/fprint $arkdep_dir/deployments/${data[0]}/rootfs/var/lib/fprint
 fi
 
-# Migrate Docker data to persistent location
-# This ensures Docker images and volumes survive image deployments
-if [[ -d /var/lib/docker ]] && [[ ! -d $arkdep_dir/shared/docker ]]; then
-	printf "Migrating Docker data to persistent location...\n"
-	mkdir -p $arkdep_dir/shared/docker
-	# Stop Docker if running
-	systemctl stop docker.socket docker.service 2>/dev/null || true
-	# Copy existing Docker data to persistent location
-	if [[ -n "$(ls -A /var/lib/docker 2>/dev/null)" ]]; then
-		cp -a /var/lib/docker/* $arkdep_dir/shared/docker/
-		printf "Docker data migrated successfully.\n"
-	fi
-fi
-
-# Ensure Docker shared directory exists
-mkdir -p $arkdep_dir/shared/docker
-
 # Ensure script is run as root
 if [[ $EUID -ne 0 ]]; then
     printf "This script must be run as root.\n" >&2

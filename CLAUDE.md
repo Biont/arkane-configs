@@ -248,11 +248,10 @@ Runs after deploying new image, before reboot. Has access to:
 **Current update.sh tasks:**
 1. Migrate EFI boot entries (pre-v3 compatibility)
 2. Copy fingerprint data from previous deployment
-3. Migrate Docker data to persistent location (/arkdep/shared/docker)
-4. Create/configure BTRFS swapfile for hibernation
-5. Configure dracut resume parameters
-6. Rebuild initramfs with resume support
-7. Add users to required groups (wheel, docker)
+3. Create/configure BTRFS swapfile for hibernation
+4. Configure dracut resume parameters
+5. Rebuild initramfs with resume support
+6. Add users to required groups (wheel, docker)
 
 **Critical sections:**
 ```bash
@@ -281,7 +280,6 @@ System is immutable by default. Modifications require:
 - `/root/` - Root user home (mounted from `/arkdep/shared/root`)
 - `/var/lib/flatpak/` - Flatpak apps (mounted from `/arkdep/shared/flatpak`)
 - `/arkdep/shared/` - Shared data between deployments
-- `/arkdep/shared/docker/` - Docker images and volumes (configured via `/etc/docker/daemon.json`)
 
 **Writable but NOT persistent (reset on deployment):**
 - `/var/` - Variable data, logs (except mounted subdirectories)
