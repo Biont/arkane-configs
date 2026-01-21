@@ -1,18 +1,33 @@
+x-ollama-base: &ollama-base
+  container_name: ollama
+  tty: true
+  restart: unless-stopped
+  ports:
+    - 11433:11434
+  volumes:
+    - ./ollama/ollama:/root/.ollama
+  environment:
+    - OLLAMA_KEEP_ALIVE=24h
+
 services:
+  # -------------------------
+  # Default: CPU-only
+  # -------------------------
   ollama:
-    volumes:
-      - ./ollama/ollama:/root/.ollama
-    container_name: ollama
-    tty: true
-    restart: unless-stopped
+    <<: *ollama-base
+    image: ollama/ollama:latest
+    # no profiles → this is the default
+
+  # -------------------------
+  # AMD GPU (ROCm)
+  # -------------------------
+  ollama-amd:
+    <<: *ollama-base
     image: ollama/ollama:rocm
-    ports:
-      - 11433:11434
+    profiles: [amd]
     environment:
       - OLLAMA_KEEP_ALIVE=24h
-#      - OLLAMA_NUM_PARALLEL=5
-      - HSA_OVERRIDE_GFX_VERSION=11.0.0
-#      - HSA_ENABLE_SDMA=0
+      - HSA_OVERRIDE_GFX_VERSION=${HSA_OVERRIDE_GFX_VERSION:-}
     devices:
       - /dev/dri
       - /dev/kfd
@@ -24,6 +39,3 @@ services:
       - SYS_PTRACE
     security_opt:
       - seccomp=unconfined
-
-#  shellgpt:
-#    build: ./shell_gpt/build

@@ -5,6 +5,7 @@ services:
       environment:
           - OPENAI_API_KEY=foo
           - OLLAMA_API_BASE_URL=http://ollama:11434
+          - WEBUI_AUTH=false
       volumes:
           - ./open-webui:/app/backend/data
       container_name: open-webui
