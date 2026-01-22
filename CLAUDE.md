@@ -49,14 +49,23 @@ arkdep-build.d/
 
 ### Stage 3: Package Installation
 1. Install packages from `package.list`
-2. Execute `post_install.sh` hook
-3. Copy files from `overlay/post_install/` to rootfs
+2. Copy files from `overlay/post_install/` to rootfs
+3. Copy files from dependency `overlay/post_install/` (can overwrite variant files!)
+4. Execute `post_install.sh` hook
 
 ### Stage 4: Finalization
-1. Generate initramfs
-2. Create bootloader entries
-3. Execute `post_build.sh` if present
-4. Export as `.tar.zst` archive
+1. **Move directories to /var and create symlinks:**
+   - `/usr/local` → `/var/usrlocal` (symlink: `/usr/local` → `../var/usrlocal`)
+   - `/opt` → `/var/opt` (symlink: `/opt` → `var/opt`)
+   - `/srv` → `/var/srv`
+   - `/mnt` → `/var/mnt`
+2. Create mountpoints for shared subvolumes (`/root`, `/arkdep`, `/var/lib/flatpak`)
+3. Generate initramfs
+4. Create bootloader entries
+5. Execute `post_build.sh` if present
+6. Export as `.tar.zst` archive
+
+**Important:** The symlink creation in Stage 4 means overlay files placed in `/opt/` end up in `/var/opt/` at runtime.
 
 ## Build Environment Variables
 
@@ -142,6 +151,30 @@ arch-chroot $workdir pacman -S package-name
 ## Overlay System
 
 Files in overlay directories copy directly to rootfs, preserving directory structure.
+
+### Overlay Copy Order (Important!)
+
+During build, overlays are copied in this order:
+1. Variant's `overlay/post_install/` files are copied first
+2. Dependency overlays (from `depends.list`) are copied **after** and can **overwrite** variant files
+
+This means if a base dependency (like `arkanelinux-generic`) has the same file path, it will overwrite your variant's version. To avoid conflicts, use unique file paths or place files in locations the base doesn't use.
+
+### Overlay vs Migrated Files
+
+**Critical:** Some directories are **migrated between deployments**, meaning files from the previous deployment are copied to the new one. These migrated files can overwrite overlay files:
+
+**Migrated paths (defined in arkdep config):**
+- `var/usrlocal` (which is `/usr/local` via symlink)
+- `var/opt` (which is `/opt` via symlink)
+- `var/srv`, `var/lib/AccountsService`, `var/lib/bluetooth`
+- `var/lib/NetworkManager`, `var/lib/arkane`, `var/db`
+- `etc/localtime`, `etc/locale.gen`, `etc/locale.conf`
+- `etc/NetworkManager/system-connections`, `etc/ssh`
+- `etc/fstab`, `etc/crypttab`, `etc/luks-keys`
+- `etc/passwd`, `etc/shadow`, `etc/group`, `etc/subuid`, `etc/subgid`
+
+**Consequence:** If you place a script in `overlay/post_install/usr/local/bin/`, it may be overwritten by a migrated version from a previous deployment. **Prefer `/usr/bin/` for custom scripts** to avoid this issue.
 
 ### Post-Bootstrap Overlay
 
@@ -275,15 +308,42 @@ System is immutable by default. Modifications require:
 
 ### Writable Locations
 
-**Persistent across deployments:**
-- `/home/` - User data (mounted from `/arkdep/shared/home`)
-- `/root/` - Root user home (mounted from `/arkdep/shared/root`)
-- `/var/lib/flatpak/` - Flatpak apps (mounted from `/arkdep/shared/flatpak`)
-- `/arkdep/shared/` - Shared data between deployments
+**Persistent across deployments (Btrfs subvolumes mounted via fstab):**
+- `/home/` - User data (mounted from `arkdep/shared/home` subvolume)
+- `/root/` - Root user home (mounted from `arkdep/shared/root` subvolume)
+- `/var/lib/flatpak/` - Flatpak apps (mounted from `arkdep/shared/flatpak` subvolume)
+- `/arkdep/` - Arkdep data directory (mounted from `arkdep` subvolume)
+- `/arkdep/shared/` - Parent directory for shared subvolumes, useful for custom persistent data
 
-**Writable but NOT persistent (reset on deployment):**
-- `/var/` - Variable data, logs (except mounted subdirectories)
-- `/etc/` - Local configuration (overlay on base image, changes lost on deployment)
+**Symlinked to /var (contents migrated between deployments):**
+- `/usr/local/` → `/var/usrlocal/` - Local programs and scripts
+- `/opt/` → `/var/opt/` - Optional/add-on packages
+- `/srv/` → `/var/srv/` - Site-specific data
+- `/mnt/` → `/var/mnt/` - Mount points
+
+**Writable but reset on each deployment:**
+- Most of `/var/` - Variable data, logs (except mounted/symlinked paths)
+- `/etc/` - Local configuration (arkdep overlay system, some files migrated)
+
+### Shared Subvolume Structure
+
+```
+/arkdep/
+├── shared/
+│   ├── home/          # → mounted at /home
+│   ├── root/          # → mounted at /root
+│   ├── flatpak/       # → mounted at /var/lib/flatpak
+│   ├── swapfile       # Swap file for hibernation
+│   └── mkcert/        # (example) Custom persistent data
+├── deployments/       # All deployed images
+│   └── biont-2026-01-22-xxxxx/
+│       └── rootfs/    # The actual root filesystem
+├── cache/             # Downloaded images before deployment
+├── overlay/           # User overlay (copied to / on demand)
+└── tracker            # Tracks deployment order
+```
+
+**Use `/arkdep/shared/` for data that must persist across deployments** but doesn't fit in `/home`. Example: system-wide CA certificates, shared configuration.
 
 ### Package Management
 
@@ -335,7 +395,7 @@ arch-chroot $workdir systemctl enable service-name
 Edit files in `overlay/post_bootstrap/etc/dconf/db/gnome.d/`
 
 ### Add User Script
-Place in `overlay/post_install/usr/bin/` or `/usr/local/bin/`
+Place in `overlay/post_install/usr/bin/`. **Avoid `/usr/local/bin/`** as it gets symlinked to `/var/usrlocal/bin/` which is migrated between deployments and can overwrite your overlay files.
 
 ### Add Docker Compose Service
 1. Place compose file in `overlay/post_install/opt/service-name/`
@@ -346,7 +406,9 @@ Place in `overlay/post_install/usr/bin/` or `/usr/local/bin/`
 Edit `overlay/post_bootstrap/etc/dracut.conf.d/biont.conf`
 
 ### Add First-Boot Script
-Create script in extension that copies to `/var/opt/arkane-postinstall/`
+Place script in `overlay/post_install/opt/arkane-postinstall/`. During build, `/opt` is moved to `/var/opt` and symlinked, so your script ends up at `/var/opt/arkane-postinstall/` where `arkane-postinstall.service` expects it.
+
+**Do NOT place in `overlay/post_install/var/opt/`** - this will cause the build to fail because arkdep-build tries to move `/opt` to `/var/opt` which would then be non-empty.
 
 ## Troubleshooting
 
@@ -376,6 +438,16 @@ Create script in extension that copies to `/var/opt/arkane-postinstall/`
 - Verify changes made in build process, not on deployed system
 - Check file placed in correct overlay directory
 - Ensure not modifying read-only paths on deployed system
+
+### Overlay Files Being Overwritten
+If your overlay file keeps getting replaced with an old version:
+1. **Check migrated paths**: Files in `/usr/local/` (`var/usrlocal`), `/opt/` (`var/opt`), and other migrated paths are copied from previous deployments
+2. **Solution**: Move the file to a non-migrated location like `/usr/bin/` instead of `/usr/local/bin/`
+3. **Check dependency overlays**: Base variants (in `depends.list`) copy their overlays AFTER yours and can overwrite
+
+### Build Fails: "unable to remove target: Directory not empty"
+This happens when placing files directly in `/var/opt/` in the overlay. The build tries to move `/opt` to `/var/opt` but finds it non-empty.
+- **Solution**: Place files in `overlay/post_install/opt/` instead of `overlay/post_install/var/opt/`
 
 ## Reference Commands
 
@@ -427,6 +499,25 @@ Format: `biont-YYYY-MM-DD-RANDOM10CHARS`
   - Empty `package.list` (only base from depends)
 
 Use minimal for testing base configuration without full package set.
+
+## Arkdep Runtime Configuration
+
+The deployed system uses `/arkdep/config` for runtime behavior. Key settings:
+
+| Setting | Default | Description |
+|---------|---------|-------------|
+| `deploy_keep` | 3 | Number of deployments to keep |
+| `enable_overlay` | 1 | Enable `/arkdep/overlay` system |
+| `migrate_files` | (see below) | Paths migrated between deployments |
+
+**Default migrated files:**
+```
+var/usrlocal var/opt var/srv var/lib/AccountsService var/lib/bluetooth
+var/lib/NetworkManager var/lib/arkane var/lib/power-profiles-daemon var/db
+etc/localtime etc/locale.gen etc/locale.conf etc/NetworkManager/system-connections
+etc/ssh etc/fstab etc/crypttab etc/luks-keys etc/passwd etc/shadow etc/group
+etc/subuid etc/subgid
+```
 
 ## Additional Resources
 
