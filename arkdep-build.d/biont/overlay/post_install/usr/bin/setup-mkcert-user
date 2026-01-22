@@ -1,0 +1,33 @@
+#!/bin/bash
+# Install mkcert CA to user's NSS database for Chromium-based browsers
+# Runs on login via /etc/profile.d/mkcert.sh
+
+SYSTEM_CA="/usr/local/share/mkcert/rootCA.pem"
+NSS_DB="sql:$HOME/.pki/nssdb"
+CA_NAME="mkcert root@arkanelinux"
+
+# Check if system CA exists
+if [ ! -f "$SYSTEM_CA" ]; then
+    exit 0
+fi
+
+# Check if certutil is available
+if ! command -v certutil &> /dev/null; then
+    exit 0
+fi
+
+# Create NSS database if it doesn't exist
+if [ ! -d "$HOME/.pki/nssdb" ]; then
+    mkdir -p "$HOME/.pki/nssdb"
+    certutil -N -d "$NSS_DB" --empty-password 2>/dev/null
+fi
+
+# Check if CA is already installed
+if certutil -L -d "$NSS_DB" -n "$CA_NAME" &>/dev/null; then
+    exit 0
+fi
+
+# Install the CA
+if certutil -A -n "$CA_NAME" -t "C,," -i "$SYSTEM_CA" -d "$NSS_DB" 2>/dev/null; then
+    echo "mkcert CA installed for Chromium-based browsers" >&2
+fi
