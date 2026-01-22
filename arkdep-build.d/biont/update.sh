@@ -1,3 +1,6 @@
+# Create shared docker directory if needed
+mkdir -p $arkdep_dir/shared/docker
+
 # Arkdep is pre EFI var drop version
 if [[ -f $arkdep_boot/loader/entries/${data[0]}.conf ]]; then
 	mv $arkdep_boot/loader/entries/${data[0]}.conf $arkdep_boot/loader/entries/$(date +%Y%m%d-%H%M%S)-${data[0]}+3.conf
