@@ -1,5 +1,6 @@
 arch-chroot $workdir systemctl enable arkane-postinstall.service
 arch-chroot $workdir systemctl enable dnsmasq.service
+arch-chroot $workdir systemctl enable caddy.service
 
 # Enable a plymouth theme that is better at dealing with the LUKS password prompt
 # Installed by ßß_aur.sh

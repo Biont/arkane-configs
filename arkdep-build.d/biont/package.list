@@ -63,6 +63,7 @@ fzf
 docker
 docker-compose
 dnsmasq
+caddy
 wl-clipboard
 fprintd
 jq

@@ -4,3 +4,6 @@
 127.0.0.1	localhost
 ::1		    localhost
 127.0.0.1	host.docker.internal
+
+# Local LLM services (reverse proxied by Caddy)
+127.0.0.1	webui ollama
