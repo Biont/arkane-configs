@@ -4,10 +4,10 @@ services:
           - 7861:8080
       environment:
           - OPENAI_API_KEY=foo
-          - OLLAMA_API_BASE_URL=http://ollama:11434
+          - OLLAMA_API_BASE_URL=http://ollama
           - WEBUI_AUTH=false
       volumes:
-          - ./open-webui:/app/backend/data
+          - /var/opt/llm/docker/open-webui:/app/backend/data
       container_name: open-webui
       image: ghcr.io/open-webui/open-webui:main
       restart: always

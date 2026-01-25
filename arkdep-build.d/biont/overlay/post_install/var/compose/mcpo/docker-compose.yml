@@ -6,5 +6,5 @@ services:
     image: ghcr.io/open-webui/mcpo:main
     command: --api-key "webui"  --config /config.json --hot-reload
     volumes:
-    - ./config.json:/config.json
+    - /var/opt/llm/docker/config.json:/config.json
     network_mode: "host"
