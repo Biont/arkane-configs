@@ -16,7 +16,7 @@ services:
   ollama:
     <<: *ollama-base
     image: ollama/ollama:latest
-    # no profiles → this is the default
+    profiles: [cpu]
 
   # -------------------------
   # AMD GPU (ROCm)
