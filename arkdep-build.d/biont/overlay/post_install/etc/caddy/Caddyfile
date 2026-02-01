@@ -1,10 +1,12 @@
 # Local reverse proxy for LLM services
-# Enables http://webui and http://ollama instead of localhost:port
+# Enables http://webui.internal and http://ollama.internal instead of localhost:port
 
-http://webui {
+http://webui.internal {
+	bind 127.0.0.1
 	reverse_proxy localhost:7860
 }
 
-http://ollama {
+http://ollama.internal {
+	bind 127.0.0.1
 	reverse_proxy localhost:11434
 }
