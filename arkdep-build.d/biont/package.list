@@ -48,7 +48,7 @@ pipewire-alsa
 pipewire-audio
 pipewire-jack
 pipewire-pulse
-power-profiles-daemon
+tlp-pd
 spice-vdagent
 switcheroo-control
 webp-pixbuf-loader
