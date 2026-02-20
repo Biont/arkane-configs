@@ -21,6 +21,7 @@ bluez-cups
 bluez-plugins
 bluez-utils
 cups
+cpio
 cups-pdf
 flatpak
 fuse3
