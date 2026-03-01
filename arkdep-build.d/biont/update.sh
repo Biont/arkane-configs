@@ -63,6 +63,12 @@ mkdir -p "$dracut_conf_dir"
 printf "add_dracutmodules+=\" resume \"\n" > "$resume_conf"
 printf "add_dracutcmdline=\"resume=UUID=%s resume_offset=%s\"\n" "$uuid" "$offset" >> "$resume_conf"
 
+# Point dracut to the deployment's firmware for ACPI table override
+acpi_fw_dir="$arkdep_dir/deployments/${data[0]}/rootfs/lib/firmware/acpi"
+if [[ -d "$acpi_fw_dir" ]]; then
+    printf 'acpi_table_dir="%s"\n' "$acpi_fw_dir" > "${dracut_conf_dir}/acpi-table-dir.conf"
+fi
+
 # Rebuild dracut
 printf "Rebuilding dracut configuration...\n"
 dracut -q -k $arkdep_dir/deployments/${data[0]}/rootfs/usr/lib/modules/${kernels_installed[0]} \
