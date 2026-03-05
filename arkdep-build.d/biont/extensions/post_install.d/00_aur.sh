@@ -1,6 +1,7 @@
 AUR_PACKAGES=(
 claude-desktop-bin
 claude-code
+claude-cowork-service
 claude-code-router
 waydroid
 waydroid-script-git
