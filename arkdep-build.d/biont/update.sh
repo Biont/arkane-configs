@@ -39,6 +39,17 @@ if ! grep -qF "$current_swapfile" "$fstab"; then
     printf "%s none swap defaults 0 0\n" "$SWAPFILE" >> "$fstab"
 fi
 
+# Ensure tpm2-device=auto is set in crypttab entries for TPM2 auto-unlock
+crypttab="$arkdep_dir/deployments/${data[0]}/rootfs/etc/crypttab"
+if [[ -f "$crypttab" ]] && ! grep -q 'tpm2-device=auto' "$crypttab"; then
+    printf "Adding tpm2-device=auto to crypttab entries...\n"
+    sed -i -r '/^[[:space:]]*(#|$)/!{
+        s/^(([^[:space:]]+[[:space:]]+){3})([^[:space:]]+)[[:space:]]*$/\1\3,tpm2-device=auto/
+        t
+        s/[[:space:]]*$/\ttpm2-device=auto/
+    }' "$crypttab"
+fi
+
 #Lock rootfs again
 btrfs property set -f -ts $arkdep_dir/deployments/${data[0]}/rootfs ro true
 
