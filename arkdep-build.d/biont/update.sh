@@ -39,6 +39,21 @@ if ! grep -qF "$current_swapfile" "$fstab"; then
     printf "%s none swap defaults 0 0\n" "$SWAPFILE" >> "$fstab"
 fi
 
+# Ensure /var/lib/waydroid is backed by a shared Btrfs subvolume
+waydroid_subvol="$arkdep_dir/shared/waydroid"
+waydroid_mount="$arkdep_dir/deployments/${data[0]}/rootfs/var/lib/waydroid"
+if [[ ! -d "$waydroid_subvol" ]]; then
+    printf "Creating shared Btrfs subvolume for Waydroid...\n"
+    btrfs subvolume create "$waydroid_subvol"
+fi
+mkdir -p "$waydroid_mount"
+if ! grep -qF "$waydroid_subvol" "$fstab"; then
+    printf "Adding Waydroid subvolume mount to /etc/fstab...\n"
+    printf "%s /var/lib/waydroid btrfs subvol=%s 0 0\n" \
+        "$(findmnt -no SOURCE -T "$arkdep_dir" | sed 's/\[.*\]//')" \
+        "arkdep/shared/waydroid" >> "$fstab"
+fi
+
 # Ensure tpm2-device=auto is set in crypttab entries for TPM2 auto-unlock
 crypttab="$arkdep_dir/deployments/${data[0]}/rootfs/etc/crypttab"
 if [[ -f "$crypttab" ]] && ! grep -q 'tpm2-device=auto' "$crypttab"; then
