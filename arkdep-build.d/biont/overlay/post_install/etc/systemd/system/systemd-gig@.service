@@ -6,3 +6,5 @@ PartOf=multi-user.target
 [Service]
 EnvironmentFile=%E/systemd-containers/gig/%i.conf
 ExecStart=/lib/systemd/systemd-socket-proxyd 127.0.0.1:${TARGET_PORT} --exit-idle-time="${TIMEOUT}"
+Restart=on-failure
+RestartSec=5
