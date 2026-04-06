@@ -26,12 +26,6 @@ services:
       LLAMA_ARG_THREADS: ${LLAMA_ARG_THREADS}
       LLAMA_ARG_PARALLEL: ${LLAMA_ARG_PARALLEL}
 
-      # Speculative decoding
-      LLAMA_ARG_SPEC_TYPE: ${LLAMA_ARG_SPEC_TYPE}
-      LLAMA_ARG_SPEC_NGRAM_SIZE_N: ${LLAMA_ARG_SPEC_NGRAM_SIZE_N}
-      LLAMA_ARG_DRAFT_MIN: ${LLAMA_ARG_DRAFT_MIN}
-      LLAMA_ARG_DRAFT_MAX: ${LLAMA_ARG_DRAFT_MAX}
-
       # KV cache quantization
       LLAMA_ARG_CACHE_TYPE_K: ${LLAMA_ARG_CACHE_TYPE_K}
       LLAMA_ARG_CACHE_TYPE_V: ${LLAMA_ARG_CACHE_TYPE_V}
@@ -55,15 +49,10 @@ services:
 
       # Server features
       LLAMA_ARG_EMBEDDINGS: ${LLAMA_ARG_EMBEDDINGS}
-      LLAMA_ARG_REASONING_BUDGET: ${LLAMA_ARG_REASONING_BUDGET}
 
       # Web UI
       LLAMA_ARG_UI: ${LLAMA_ARG_UI}
       LLAMA_ARG_UI_PORT: ${LLAMA_ARG_UI_PORT}
-
-      # Chat / prompting
-      LLAMA_ARG_CHAT_TEMPLATE_KWARGS: ${LLAMA_ARG_CHAT_TEMPLATE_KWARGS}
-      LLAMA_ARG_SYSTEM_PROMPT: ${LLAMA_ARG_SYSTEM_PROMPT}
 
     volumes:
       - /var/opt/llm/docker/llama-cpp/hf-cache:/root/.cache/huggingface
