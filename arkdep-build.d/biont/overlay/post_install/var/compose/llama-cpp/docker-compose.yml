@@ -3,13 +3,15 @@ services:
     image: ghcr.io/ggml-org/llama.cpp:server-vulkan
     container_name: llama-cpp
     restart: unless-stopped
+    env_file: /var/opt/llm/docker/llama-cpp/.env
 
     devices:
       - /dev/dri
 
     environment:
-      # Model
-      LLAMA_ARG_MODEL: ${LLAMA_ARG_MODEL}
+      # Model (auto-download from HuggingFace)
+      LLAMA_ARG_HF_REPO: ${LLAMA_ARG_HF_REPO}
+      LLAMA_ARG_HF_FILE: ${LLAMA_ARG_HF_FILE}
       LLAMA_ARG_ALIAS: ${LLAMA_ARG_ALIAS}
 
       # Network
@@ -64,7 +66,7 @@ services:
       LLAMA_ARG_SYSTEM_PROMPT: ${LLAMA_ARG_SYSTEM_PROMPT}
 
     volumes:
-      - /var/opt/llm/docker/llama-cpp/models:/models
+      - /var/opt/llm/docker/llama-cpp/hf-cache:/root/.cache/huggingface
 
     ports:
       - "${LLAMA_ARG_UI_PORT}:${LLAMA_ARG_UI_PORT}"
