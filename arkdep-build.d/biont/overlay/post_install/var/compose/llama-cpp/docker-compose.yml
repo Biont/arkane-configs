@@ -1,0 +1,70 @@
+services:
+  llama:
+    image: ghcr.io/ggml-org/llama.cpp:server-vulkan
+    container_name: llama-cpp
+    restart: unless-stopped
+
+    devices:
+      - /dev/dri
+
+    environment:
+      # Model
+      LLAMA_ARG_MODEL: ${LLAMA_ARG_MODEL}
+      LLAMA_ARG_ALIAS: ${LLAMA_ARG_ALIAS}
+
+      # Network
+      LLAMA_ARG_HOST: ${LLAMA_ARG_HOST}
+      LLAMA_ARG_PORT: ${LLAMA_ARG_PORT}
+
+      # GPU / Performance
+      LLAMA_ARG_N_GPU_LAYERS: ${LLAMA_ARG_N_GPU_LAYERS}
+      LLAMA_ARG_CTX_SIZE: ${LLAMA_ARG_CTX_SIZE}
+      LLAMA_ARG_BATCH_SIZE: ${LLAMA_ARG_BATCH_SIZE}
+      LLAMA_ARG_UBATCH_SIZE: ${LLAMA_ARG_UBATCH_SIZE}
+      LLAMA_ARG_THREADS: ${LLAMA_ARG_THREADS}
+      LLAMA_ARG_PARALLEL: ${LLAMA_ARG_PARALLEL}
+
+      # Speculative decoding
+      LLAMA_ARG_SPEC_TYPE: ${LLAMA_ARG_SPEC_TYPE}
+      LLAMA_ARG_SPEC_NGRAM_SIZE_N: ${LLAMA_ARG_SPEC_NGRAM_SIZE_N}
+      LLAMA_ARG_DRAFT_MIN: ${LLAMA_ARG_DRAFT_MIN}
+      LLAMA_ARG_DRAFT_MAX: ${LLAMA_ARG_DRAFT_MAX}
+
+      # KV cache quantization
+      LLAMA_ARG_CACHE_TYPE_K: ${LLAMA_ARG_CACHE_TYPE_K}
+      LLAMA_ARG_CACHE_TYPE_V: ${LLAMA_ARG_CACHE_TYPE_V}
+
+      # Sampling
+      LLAMA_ARG_REPEAT_PENALTY: ${LLAMA_ARG_REPEAT_PENALTY}
+      LLAMA_ARG_PRESENCE_PENALTY: ${LLAMA_ARG_PRESENCE_PENALTY}
+      LLAMA_ARG_MIN_P: ${LLAMA_ARG_MIN_P}
+      LLAMA_ARG_TOP_K: ${LLAMA_ARG_TOP_K}
+      LLAMA_ARG_TOP_P: ${LLAMA_ARG_TOP_P}
+      LLAMA_ARG_TEMP: ${LLAMA_ARG_TEMP}
+
+      # Memory / IO
+      LLAMA_ARG_MMAP: ${LLAMA_ARG_MMAP}
+      LLAMA_ARG_MLOCK: ${LLAMA_ARG_MLOCK}
+      LLAMA_ARG_SPLIT_MODE: ${LLAMA_ARG_SPLIT_MODE}
+
+      # Acceleration
+      LLAMA_ARG_FLASH_ATTN: ${LLAMA_ARG_FLASH_ATTN}
+      LLAMA_ARG_CONT_BATCHING: ${LLAMA_ARG_CONT_BATCHING}
+
+      # Server features
+      LLAMA_ARG_EMBEDDINGS: ${LLAMA_ARG_EMBEDDINGS}
+      LLAMA_ARG_REASONING_BUDGET: ${LLAMA_ARG_REASONING_BUDGET}
+
+      # Web UI
+      LLAMA_ARG_UI: ${LLAMA_ARG_UI}
+      LLAMA_ARG_UI_PORT: ${LLAMA_ARG_UI_PORT}
+
+      # Chat / prompting
+      LLAMA_ARG_CHAT_TEMPLATE_KWARGS: ${LLAMA_ARG_CHAT_TEMPLATE_KWARGS}
+      LLAMA_ARG_SYSTEM_PROMPT: ${LLAMA_ARG_SYSTEM_PROMPT}
+
+    volumes:
+      - /var/opt/llm/docker/llama-cpp/models:/models
+
+    ports:
+      - "${LLAMA_ARG_UI_PORT}:${LLAMA_ARG_UI_PORT}"
