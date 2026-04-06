@@ -8,54 +8,8 @@ services:
     devices:
       - /dev/dri
 
-    environment:
-      # Model (auto-download from HuggingFace)
-      LLAMA_ARG_HF_REPO: ${LLAMA_ARG_HF_REPO}
-      LLAMA_ARG_HF_FILE: ${LLAMA_ARG_HF_FILE}
-      LLAMA_ARG_ALIAS: ${LLAMA_ARG_ALIAS}
-
-      # Network
-      LLAMA_ARG_HOST: ${LLAMA_ARG_HOST}
-      LLAMA_ARG_PORT: ${LLAMA_ARG_PORT}
-
-      # GPU / Performance
-      LLAMA_ARG_N_GPU_LAYERS: ${LLAMA_ARG_N_GPU_LAYERS}
-      LLAMA_ARG_CTX_SIZE: ${LLAMA_ARG_CTX_SIZE}
-      LLAMA_ARG_BATCH_SIZE: ${LLAMA_ARG_BATCH_SIZE}
-      LLAMA_ARG_UBATCH_SIZE: ${LLAMA_ARG_UBATCH_SIZE}
-      LLAMA_ARG_THREADS: ${LLAMA_ARG_THREADS}
-      LLAMA_ARG_PARALLEL: ${LLAMA_ARG_PARALLEL}
-
-      # KV cache quantization
-      LLAMA_ARG_CACHE_TYPE_K: ${LLAMA_ARG_CACHE_TYPE_K}
-      LLAMA_ARG_CACHE_TYPE_V: ${LLAMA_ARG_CACHE_TYPE_V}
-
-      # Sampling
-      LLAMA_ARG_REPEAT_PENALTY: ${LLAMA_ARG_REPEAT_PENALTY}
-      LLAMA_ARG_PRESENCE_PENALTY: ${LLAMA_ARG_PRESENCE_PENALTY}
-      LLAMA_ARG_MIN_P: ${LLAMA_ARG_MIN_P}
-      LLAMA_ARG_TOP_K: ${LLAMA_ARG_TOP_K}
-      LLAMA_ARG_TOP_P: ${LLAMA_ARG_TOP_P}
-      LLAMA_ARG_TEMP: ${LLAMA_ARG_TEMP}
-
-      # Memory / IO
-      LLAMA_ARG_MMAP: ${LLAMA_ARG_MMAP}
-      LLAMA_ARG_MLOCK: ${LLAMA_ARG_MLOCK}
-      LLAMA_ARG_SPLIT_MODE: ${LLAMA_ARG_SPLIT_MODE}
-
-      # Acceleration
-      LLAMA_ARG_FLASH_ATTN: ${LLAMA_ARG_FLASH_ATTN}
-      LLAMA_ARG_CONT_BATCHING: ${LLAMA_ARG_CONT_BATCHING}
-
-      # Server features
-      LLAMA_ARG_EMBEDDINGS: ${LLAMA_ARG_EMBEDDINGS}
-
-      # Web UI
-      LLAMA_ARG_UI: ${LLAMA_ARG_UI}
-      LLAMA_ARG_UI_PORT: ${LLAMA_ARG_UI_PORT}
-
     volumes:
       - /var/opt/llm/docker/llama-cpp/hf-cache:/root/.cache/huggingface
 
     ports:
-      - "${LLAMA_ARG_UI_PORT}:${LLAMA_ARG_UI_PORT}"
+      - "7861:7861"
