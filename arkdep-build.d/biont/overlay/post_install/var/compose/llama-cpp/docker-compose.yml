@@ -1,0 +1,15 @@
+services:
+  llama:
+    image: ghcr.io/ggml-org/llama.cpp:server-vulkan
+    container_name: llama-cpp
+    restart: unless-stopped
+    env_file: /var/opt/llm/docker/llama-cpp/.env
+
+    devices:
+      - /dev/dri
+
+    volumes:
+      - /var/opt/llm/docker/llama-cpp/hf-cache:/root/.cache/huggingface
+
+    ports:
+      - "7861:7861"

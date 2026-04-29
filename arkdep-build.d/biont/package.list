@@ -106,3 +106,4 @@ v4l2loopback-utils
 sudo-rs
 realtime-privileges
 sshfs
+zram-generator

@@ -1,15 +1,14 @@
 [Unit]
-Description=Runs a socket-activated service and stops it after a while
-After=network-online.target
-PartOf=systemd-gig@%i.service
-StopWhenUnneeded=true
-BindsTo=systemd-gig@%i.service
+Description=Readiness gate for socket-activated service on port %i
+Requires=systemd-gig-container@%i.service
+After=systemd-gig-container@%i.service
+BindsTo=systemd-gig@%i.service systemd-gig-container@%i.service
 Before=systemd-gig@%i.service
+StopWhenUnneeded=true
 
 [Service]
-Type=simple
+Type=oneshot
 RemainAfterExit=true
+TimeoutStartSec=300
 EnvironmentFile=%E/systemd-containers/gig/%i.conf
-ExecStart=/usr/bin/systemd-gig start %i
-ExecStartPost=/usr/bin/systemd-gig wait-online ${TARGET_PORT}
-ExecStop=/usr/bin/systemd-gig stop %i
+ExecStart=/usr/bin/systemd-gig wait-online ${TARGET_PORT}

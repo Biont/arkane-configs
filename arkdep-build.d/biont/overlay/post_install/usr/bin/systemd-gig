@@ -1,16 +1,16 @@
 #!/usr/bin/env bash
 
 
-function exec() {
+function run_cmd() {
  echo "$PWD"
- readarray -td ' ' CMD <<<${1}
+ readarray -td ' ' CMD <<<"${1}"
  "${CMD[@]%$'\n'}"
 }
 
 function wait-online() {
  tries=600
 
- for i in `seq $tries`; do
+ for i in $(seq $tries); do
   if nc -z 127.0.0.1 $1 > /dev/null ; then
     # Ready
    echo "Port ${1} online"
@@ -18,20 +18,18 @@ function wait-online() {
   fi
   /bin/sleep 0.1
  done
+ echo "Port ${1} failed to come online after ${tries} attempts" >&2
+ exit 1
 }
 
 function start() {
- pushd "${WORKING_DIRECTORY}"
- exec "${EXEC_START}" &
+ cd "${WORKING_DIRECTORY}"
+ run_cmd "${EXEC_START}"
 }
 
 function stop() {
- pushd "${WORKING_DIRECTORY}"
- exec "${EXEC_STOP}"
-}
-
-function init() {
- systemctl start "systemd-gig@.service${1}.service"
+ cd "${WORKING_DIRECTORY}"
+ run_cmd "${EXEC_STOP}"
 }
 
 case "$1" in
@@ -40,4 +38,3 @@ start | stop | wait-online)
   exit
   ;;
 esac
-

@@ -1,0 +1,10 @@
+[Unit]
+Description=Container runtime for socket-activated service on port %i
+After=network-online.target docker.service
+Wants=docker.service
+
+[Service]
+Type=simple
+EnvironmentFile=%E/systemd-containers/gig/%i.conf
+ExecStart=/usr/bin/systemd-gig start %i
+ExecStop=/usr/bin/systemd-gig stop %i
