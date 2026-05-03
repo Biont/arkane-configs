@@ -10,6 +10,7 @@ ddev-bin
 jetbrains-toolbox
 jetbrains-nautilus-git
 plymouth-theme-bgrt-better-luks
+playwright-bin
 )
 
 declare -r aur_root="/usr/share/aur"

@@ -106,3 +106,7 @@ sudo-rs
 realtime-privileges
 sshfs
 zram-generator
+
+# Dev CLIs
+github-cli
+tea
