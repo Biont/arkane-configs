@@ -67,6 +67,7 @@ dnsmasq
 caddy
 wl-clipboard
 fprintd
+github-cli
 jq
 yq
 mkcert
