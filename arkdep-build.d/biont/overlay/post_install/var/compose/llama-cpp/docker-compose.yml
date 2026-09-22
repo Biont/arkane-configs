@@ -13,3 +13,18 @@ services:
 
     ports:
       - "7861:7861"
+
+  llama-cpp-embedding:
+    image: ghcr.io/ggml-org/llama.cpp:server-vulkan
+    container_name: llama-cpp-embedding
+    restart: unless-stopped
+    env_file: /var/opt/llm/docker/llama-cpp/.env.embedding
+
+    devices:
+      - /dev/dri
+
+    volumes:
+      - /var/opt/llm/docker/llama-cpp/hf-cache:/root/.cache/huggingface
+
+    ports:
+      - "7862:7862"

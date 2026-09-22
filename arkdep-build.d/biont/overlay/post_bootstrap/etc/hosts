@@ -7,3 +7,5 @@
 
 # Local LLM services (reverse proxied by Caddy)
 127.0.0.1	llama
+127.0.0.1	embedding.llama.internal
+127.0.0.1	embedding.llama.internal

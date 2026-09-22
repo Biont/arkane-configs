@@ -10,7 +10,6 @@ ddev-bin
 jetbrains-toolbox
 jetbrains-nautilus-git
 plymouth-theme-bgrt-better-luks
-playwright-bin
 )
 
 declare -r aur_root="/usr/share/aur"
@@ -46,11 +45,23 @@ makepkg -si --noconfirm
 # Verify yay installation
 arch-chroot $workdir sudo -u aurbuilder bash -c "which yay"
 
-# Install AUR packages
-arch-chroot $workdir sudo -u aurbuilder bash -c "yay -S --noconfirm ${AUR_PACKAGES[*]}"
+# Install AUR packages one at a time so a single broken package does not abort the batch
+declare -a failed_pkgs=()
+for pkg in "${AUR_PACKAGES[@]}"; do
+    printf '\n=== Installing AUR package: %s ===\n' "$pkg"
+    if ! arch-chroot $workdir sudo -u aurbuilder bash -c "yay -S --needed --noconfirm '$pkg'"; then
+        printf '!!! AUR package failed to install: %s\n' "$pkg" >&2
+        failed_pkgs+=("$pkg")
+    fi
+done
+
+if (( ${#failed_pkgs[@]} > 0 )); then
+    printf '\n!!! The following AUR packages were skipped due to install failures:\n' >&2
+    printf '  - %s\n' "${failed_pkgs[@]}" >&2
+fi
 
 # Cleanup
-arch-chroot $workdir sudo -u aurbuilder bash -c "yay -Yc --noconfirm"
+arch-chroot $workdir sudo -u aurbuilder bash -c "yay -Yc --noconfirm" || true
 arch-chroot $workdir bash -c "
 rm -f /etc/sudoers.d/aurbuilder
 userdel -r aurbuilder 2>/dev/null || true

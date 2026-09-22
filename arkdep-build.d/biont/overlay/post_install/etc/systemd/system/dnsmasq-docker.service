@@ -1,0 +1,15 @@
+[Unit]
+Description=dnsmasq for Docker bridges
+Documentation=file:/etc/dnsmasq.d/docker.conf
+After=docker.service
+Requires=docker.service
+BindsTo=docker.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/dnsmasq --keep-in-foreground --conf-file=/etc/dnsmasq.d/docker.conf
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

@@ -5,3 +5,8 @@ http://llama.internal {
 	bind 127.0.0.1
 	reverse_proxy localhost:7860
 }
+
+http://embedding.llama.internal {
+	bind 127.0.0.1
+	reverse_proxy localhost:7862
+}
