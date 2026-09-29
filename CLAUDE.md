@@ -280,11 +280,16 @@ Runs after deploying new image, before reboot. Has access to:
 
 **Current update.sh tasks:**
 1. Migrate EFI boot entries (pre-v3 compatibility)
-2. Copy fingerprint data from previous deployment
-3. Create/configure BTRFS swapfile for hibernation
-4. Configure dracut resume parameters
-5. Rebuild initramfs with resume support
-6. Add users to required groups (wheel, docker)
+2. Create BTRFS swapfile for hibernation (only if missing or smaller than RAM)
+3. Copy fingerprint data from previous deployment
+4. Fix up fstab (swapfile, Waydroid subvolume) and crypttab (TPM2)
+5. Add `kernel_cmdline` from dracut config plus `resume=`/`resume_offset=` to the bootloader entry
+6. Rebuild initramfs with resume support
+7. Add users to required groups (wheel, docker)
+
+**Kernel parameters:** dracut's `kernel_cmdline` only lands in the initramfs, the kernel never sees it. `update.sh` copies these parameters onto the bootloader entry's `options` line, so setting `kernel_cmdline+=` in a dracut conf is still the way to add kernel parameters.
+
+**Swap:** No zram; zswap (kernel default) compresses in front of the disk swapfile, which is required for reliable hibernation.
 
 **Critical sections:**
 ```bash
