@@ -76,8 +76,6 @@ alsa-firmware
 wireguard-tools
 openresolv
 openbsd-netcat
-tpm2-tss
-tpm2-tools
 
 # Printing & Scanning
 hplip
@@ -103,10 +101,13 @@ v4l2loopback-dkms
 v4l2loopback-utils
 
 # Fancy stuff
-sudo-rs
 realtime-privileges
 sshfs
 
 # Dev CLIs
 github-cli
 tea
+
+# Waydroid (moved from AUR to extra)
+waydroid
+python-pyclip

@@ -1,11 +1,8 @@
 AUR_PACKAGES=(
-claude-desktop-bin
+claude-desktop
 claude-code
-claude-cowork-service
 claude-code-router
-waydroid
 waydroid-script-git
-python-pyclip
 ddev-bin
 jetbrains-toolbox
 jetbrains-nautilus-git
