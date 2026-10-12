@@ -3,3 +3,7 @@ arch-chroot $workdir chmod 666 /var/run/docker.sock
 arch-chroot $workdir systemctl enable systemd-gig@7860.socket
 arch-chroot $workdir systemctl enable dnsmasq-docker.service
 
+# New users join the docker group, patched onto upstream's /etc/default/useradd
+grep -q '^EXTRA_GROUPS=' $workdir/etc/default/useradd ||
+  printf 'EXTRA_GROUPS=docker\nADD_EXTRA_GROUPS=1\n' >> $workdir/etc/default/useradd
+
