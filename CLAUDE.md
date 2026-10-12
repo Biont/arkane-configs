@@ -100,7 +100,7 @@ Scripts in `.d/` directories execute in alphanumeric order (00_, 05_, 10_, 20_, 
 
 **post_install.d/**
 - `00_aur.sh` - Install AUR packages using temporary build user
-- `05_docker.sh` - Enable Docker socket and systemd-gig services
+- `05_docker.sh` - Enable Docker socket and systemd-gig services, add docker to useradd EXTRA_GROUPS
 - `10_postinstall.sh` - Enable services, configure Plymouth, install mkcert
 - `20_shellm.sh` - Download and install shellm utility
 
@@ -158,7 +158,22 @@ During build, overlays are copied in this order:
 1. Variant's `overlay/post_install/` files are copied first
 2. Dependency overlays (from `depends.list`) are copied **after** and can **overwrite** variant files
 
-This means if a base dependency (like `arkanelinux-generic`) has the same file path, it will overwrite your variant's version. To avoid conflicts, use unique file paths or place files in locations the base doesn't use.
+This means if a base dependency (like `arkanelinux-generic`) has the same file path, it will overwrite your variant's version. To avoid conflicts, use unique file paths or place files in locations the base doesn't use. `scripts/check.sh` fails on such collisions.
+
+### Staying Close to Upstream
+
+`arkdep-build.d/depends/arkanelinux-generic/` is a verbatim copy of `arkdep-build.d/depends/arkanelinux-generic` in [arkanelinux/arkdep](https://github.com/arkanelinux/arkdep). The commit it came from is recorded in its `UPSTREAM` file.
+
+- **Never edit the vendored directory.** `scripts/sync-upstream.sh [ref]` replaces it wholesale, and `scripts/check.sh` fails if it differs from the pinned commit.
+- **Customize from the biont variant as a delta, not a fork:**
+  1. Prefer drop-in files upstream doesn't ship, e.g. `sysctl.d/90-biont.conf`, `dracut.conf.d/biont.conf` (sorts after upstream's `arkane.conf`, so it can reassign values).
+  2. Files without drop-in support: patch upstream's file in a `post_install.d` script (see the `useradd` patch in `05_docker.sh`).
+  3. Don't copy upstream files into the biont overlay. Same-stage copies get overwritten, and identical copies go stale.
+- **Don't re-list packages upstream already installs.** `scripts/check.sh` warns about these.
+
+**Automation:**
+- `scripts/check.sh [variant...]` (runs in `apply.sh` before building, and in the `check` workflow on push and weekly) checks that the vendored copy is pristine, that no overlay files collide, and that every repo and AUR package exists.
+- The `sync-upstream` workflow runs weekly, re-syncs, and opens a PR with the upstream compare link and check output. It requires "Allow GitHub Actions to create and approve pull requests" in the repo settings.
 
 ### Overlay vs Migrated Files
 
@@ -185,8 +200,6 @@ This means if a base dependency (like `arkanelinux-generic`) has the same file p
 - `/etc/dracut.conf.d/` - Initramfs configuration
 - `/etc/systemd/` - Systemd configuration
 - `/etc/dconf/` - GNOME settings
-- `/etc/sudoers.d/` - Sudo configuration
-- `/usr/abin/` - Immutability helper scripts
 
 ### Post-Install Overlay
 
@@ -423,6 +436,7 @@ Place script in `overlay/post_install/opt/arkane-postinstall/`. During build, `/
 - Ensure GPG keys configured
 
 ### Build Fails at Package Install
+- Run `scripts/check.sh biont`, it lists missing repo and AUR packages in seconds
 - Check `package.list` for typos
 - Verify packages exist in configured repos
 - Check AUR package names in `00_aur.sh`

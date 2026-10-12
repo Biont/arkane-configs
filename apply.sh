@@ -9,6 +9,9 @@ fi
 
 IMAGE="$1"
 
+# Fail in seconds on missing packages or shadowed overlays, not halfway through the build
+"$(dirname "$0")/scripts/check.sh" "$IMAGE"
+
 # Acquire sudo credentials once and keep them alive throughout the build
 sudo -v
 while true; do sudo -n true; sleep 50; kill -0 "$$" || exit; done 2>/dev/null &

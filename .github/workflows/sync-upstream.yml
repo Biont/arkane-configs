@@ -1,0 +1,45 @@
+name: sync-upstream
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 4 * * 1'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: sync
+        run: |
+          old=$(sed -n 's/^commit=//p' arkdep-build.d/depends/arkanelinux-generic/UPSTREAM)
+          scripts/sync-upstream.sh
+          new=$(sed -n 's/^commit=//p' arkdep-build.d/depends/arkanelinux-generic/UPSTREAM)
+          echo "short=${new:0:12}" >> "$GITHUB_OUTPUT"
+
+          # PRs opened with GITHUB_TOKEN do not trigger other workflows, so run the check here
+          # and put the result in the PR body
+          {
+            echo "Upstream changes: https://github.com/arkanelinux/arkdep/compare/$old...$new"
+            echo
+            echo '```'
+            git diff --stat
+            echo '```'
+            echo
+            echo '### scripts/check.sh'
+            echo '```'
+            scripts/check.sh biont minimal 2>&1 | sed 's/\x1b\[[0-9;]*m//g' || true
+            echo '```'
+          } > "$RUNNER_TEMP/body.md"
+
+      - uses: peter-evans/create-pull-request@v7
+        with:
+          branch: sync-upstream
+          delete-branch: true
+          commit-message: "chore(depends): sync arkanelinux-generic with upstream ${{ steps.sync.outputs.short }}"
+          title: "chore(depends): sync arkanelinux-generic with upstream ${{ steps.sync.outputs.short }}"
+          body-path: ${{ runner.temp }}/body.md
