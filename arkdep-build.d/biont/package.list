@@ -76,6 +76,8 @@ alsa-firmware
 wireguard-tools
 openresolv
 openbsd-netcat
+tmux
+ripgrep
 
 # Printing & Scanning
 hplip
