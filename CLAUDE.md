@@ -295,7 +295,7 @@ Runs after deploying new image, before reboot. Has access to:
 1. Migrate EFI boot entries (pre-v3 compatibility)
 2. Create BTRFS swapfile for hibernation (only if missing or smaller than RAM)
 3. Copy fingerprint data from previous deployment
-4. Fix up fstab (swapfile, Waydroid subvolume) and crypttab (TPM2)
+4. Fix up fstab (swapfile; shared subvolumes for `/var/lib/waydroid`, `/var/lib/docker`, `/var/lib/containerd`, seeded from the running system on first creation) and crypttab (TPM2)
 5. Add `kernel_cmdline` from dracut config plus `resume=`/`resume_offset=` to the bootloader entry
 6. Rebuild initramfs with resume support
 7. Add users to required groups (wheel, docker)
@@ -351,6 +351,9 @@ System is immutable by default. Modifications require:
 │   ├── home/          # → mounted at /home
 │   ├── root/          # → mounted at /root
 │   ├── flatpak/       # → mounted at /var/lib/flatpak
+│   ├── waydroid/      # → mounted at /var/lib/waydroid (via update.sh)
+│   ├── docker/        # → mounted at /var/lib/docker (volumes, e.g. ddev DBs)
+│   ├── containerd/    # → mounted at /var/lib/containerd (images)
 │   ├── swapfile       # Swap file for hibernation
 │   └── mkcert/        # (example) Custom persistent data
 ├── deployments/       # All deployed images

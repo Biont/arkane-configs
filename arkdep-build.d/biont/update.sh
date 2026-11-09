@@ -71,19 +71,32 @@ if ! grep -qE "^${current_swapfile}[[:space:]]" "$fstab"; then
     printf "%s none swap defaults 0 0\n" "$current_swapfile" >> "$fstab"
 fi
 
-# Ensure /var/lib/waydroid is backed by a shared Btrfs subvolume
-waydroid_subvol="$arkdep_dir/shared/waydroid"
-waydroid_mount="$arkdep_dir/deployments/${data[0]}/rootfs/var/lib/waydroid"
-if [[ ! -d "$waydroid_subvol" ]]; then
-    printf "Creating shared Btrfs subvolume for Waydroid...\n"
-    btrfs subvolume create "$waydroid_subvol"
-fi
-mkdir -p "$waydroid_mount"
-# Drop any existing (possibly duplicated) entries, then add exactly one
-sed -i '\#subvol=arkdep/shared/waydroid#d' "$fstab"
-printf "%s /var/lib/waydroid btrfs subvol=%s 0 0\n" \
-    "$(findmnt -no SOURCE -T "$arkdep_dir" | sed 's/\[.*\]//')" \
-    "arkdep/shared/waydroid" >> "$fstab"
+# Back a /var path with a shared Btrfs subvolume so it survives deployments.
+# On first creation the subvolume is seeded from the running system, so data
+# that so far lived in the per-deployment /var is carried over once.
+root_device=$(findmnt -no SOURCE -T "$arkdep_dir" | sed 's/\[.*\]//')
+persist_shared() {
+    local name=$1 path=$2
+    local subvol="$arkdep_dir/shared/$name"
+    if [[ ! -d "$subvol" ]]; then
+        printf "Creating shared Btrfs subvolume for %s...\n" "$path"
+        btrfs subvolume create "$subvol"
+        if [[ -d "$path" ]] && ! mountpoint -q "$path"; then
+            printf "Seeding %s from the running deployment...\n" "$subvol"
+            cp -a --reflink=auto "$path/." "$subvol/"
+        fi
+    fi
+    mkdir -p "$arkdep_dir/deployments/${data[0]}/rootfs$path"
+    # Drop any existing (possibly duplicated) entries, then add exactly one
+    sed -i "\\#subvol=arkdep/shared/$name\\([,[:space:]]\\|\$\\)#d" "$fstab"
+    printf "%s %s btrfs subvol=arkdep/shared/%s 0 0\n" "$root_device" "$path" "$name" >> "$fstab"
+}
+
+persist_shared waydroid /var/lib/waydroid
+# Docker volumes (ddev databases) and containers live in /var/lib/docker, images
+# in /var/lib/containerd (containerd snapshotter). Both must persist together.
+persist_shared docker /var/lib/docker
+persist_shared containerd /var/lib/containerd
 
 # Ensure tpm2-device=auto is set in crypttab entries for TPM2 auto-unlock
 crypttab="$arkdep_dir/deployments/${data[0]}/rootfs/etc/crypttab"
